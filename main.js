@@ -21,6 +21,7 @@ const textureLoader = new THREE.TextureLoader();
 const gridTexture = textureLoader.load("/grid-6.png");
 const heightTexture = textureLoader.load("/displacement-7.png");
 const metalnessTexture = textureLoader.load("/metalness-2.png");
+const neonSquare = textureLoader.load("/square.png");
 const parameters = {
   displacementScale: 0.4,
   metalness: 1,
@@ -68,7 +69,12 @@ function init() {
 
   cube = new THREE.Mesh(
     new THREE.BoxGeometry(0.02, 0.02, 0.02),
-    new THREE.MeshStandardMaterial({ color: "#ff0000", wireframe: false })
+    new THREE.MeshStandardMaterial({
+      wireframe: false,
+      map: neonSquare,
+      metalness: parameters.metalness,
+      roughness: parameters.roughness,
+    })
   );
   cube.position.y = 0.02;
   cube.position.z = 0.9;
@@ -140,18 +146,18 @@ function init() {
 }
 
 function onKeyDown(event) {
-  if (event.key == "w" || event.key == "ArrowLeft") {
+  if (event.key == "a" || event.key == "ArrowLeft") {
     moveLeft = true;
   }
-  if (event.key == "s" || event.key == "ArrowRight") {
+  if (event.key == "d" || event.key == "ArrowRight") {
     moveRight = true;
   }
 }
 function onKeyUp(event) {
-  if (event.key == "w" || event.key == "ArrowLeft") {
+  if (event.key == "a" || event.key == "ArrowLeft") {
     moveLeft = false;
   }
-  if (event.key == "s" || event.key == "ArrowRight") {
+  if (event.key == "d" || event.key == "ArrowRight") {
     moveRight = false;
   }
 }
@@ -167,11 +173,11 @@ function render() {
 
 const clock = new THREE.Clock();
 function animate() {
-  if (moveLeft && cube.position.x > -0.061) {
-    cube.position.x -= 0.001;
+  if (moveLeft && cube.position.x > -0.062) {
+    cube.position.x -= 0.002;
   }
-  if (moveRight && cube.position.x < 0.061) {
-    cube.position.x += 0.001;
+  if (moveRight && cube.position.x < 0.062) {
+    cube.position.x += 0.002;
   }
   const elapsedTime = clock.getElapsedTime();
   plane.position.z = (elapsedTime * 0.5) % 2;
