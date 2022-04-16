@@ -1,0 +1,17 @@
+{
+  "name": "runner-three",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lil-gui": "0.16.0",
+    "three": "0.136.0"
+  },
+  "devDependencies": {
+    "vite": "^2.9.2"
+  }
+}
