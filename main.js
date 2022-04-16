@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
@@ -12,6 +12,7 @@ let camera,
   renderer,
   plane,
   plane2,
+  plane3,
   controls,
   effectComposer,
   cube,
@@ -38,10 +39,9 @@ function init() {
   camera.position.x = 0;
   camera.position.y = 0.06;
   camera.position.z = 1.1;
-  console.log(window.innerWidth, window.innerHeight);
 
   scene = new THREE.Scene();
-  const fog = new THREE.Fog("#7e7e7e", 1, 2.5);
+  const fog = new THREE.Fog("#000000", 3.2, 3.5);
   scene.fog = fog;
   scene.add(camera);
 
@@ -57,15 +57,20 @@ function init() {
 
   plane = new THREE.Mesh(geometry, material);
   plane2 = new THREE.Mesh(geometry, material);
+  plane3 = new THREE.Mesh(geometry, material);
+
   plane.rotation.x = -Math.PI * 0.5;
   plane2.rotation.x = -Math.PI * 0.5;
-
+  plane3.rotation.x = -Math.PI * 0.5;
   plane.position.y = 0.0;
   plane.position.z = 0.15;
   plane2.position.y = 0.0;
   plane2.position.z = -1.85;
+  plane3.position.y = 0.0;
+  plane3.position.z = -3.55;
   scene.add(plane);
   scene.add(plane2);
+  scene.add(plane3);
 
   cube = new THREE.Mesh(
     new THREE.BoxGeometry(0.02, 0.02, 0.02),
@@ -111,12 +116,12 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   render(0);
-  controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.25;
-  controls.enableZoom = false;
-  controls.enablePan = false;
-  controls.maxPolarAngle = Math.PI * 0.48;
+  // controls = new OrbitControls(camera, renderer.domElement);
+  // controls.enableDamping = true;
+  // controls.dampingFactor = 0.25;
+  // controls.enableZoom = false;
+  // controls.enablePan = false;
+  // controls.maxPolarAngle = Math.PI * 0.48;
   effectComposer = new EffectComposer(renderer);
   effectComposer.setSize(window.innerWidth, window.innerHeight);
   effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -182,8 +187,9 @@ function animate() {
   const elapsedTime = clock.getElapsedTime();
   plane.position.z = (elapsedTime * 0.5) % 2;
   plane2.position.z = ((elapsedTime * 0.5) % 2) - 2;
+  plane3.position.z = ((elapsedTime * 0.5) % 2) - 4;
   window.requestAnimationFrame(animate);
-  controls.update();
+  // controls.update();
   effectComposer.render();
   render();
 }
