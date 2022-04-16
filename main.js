@@ -7,7 +7,16 @@ import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
-let camera, scene, renderer, plane, plane2, controls, effectComposer;
+let camera,
+  scene,
+  renderer,
+  plane,
+  plane2,
+  controls,
+  effectComposer,
+  cube,
+  moveLeft = false,
+  moveRight = false;
 const textureLoader = new THREE.TextureLoader();
 const gridTexture = textureLoader.load("/grid-6.png");
 const heightTexture = textureLoader.load("/displacement-7.png");
@@ -56,6 +65,14 @@ function init() {
   plane2.position.z = -1.85;
   scene.add(plane);
   scene.add(plane2);
+
+  cube = new THREE.Mesh(
+    new THREE.BoxGeometry(0.02, 0.02, 0.02),
+    new THREE.MeshStandardMaterial({ color: "#ff0000", wireframe: false })
+  );
+  cube.position.y = 0.02;
+  cube.position.z = 0.9;
+  scene.add(cube);
 
   const ambientLight = new THREE.AmbientLight("#ffffff", 10);
   scene.add(ambientLight);
@@ -118,6 +135,25 @@ function init() {
   effectComposer.addPass(bloomPass);
 
   window.addEventListener("resize", onWindowResize);
+  window.addEventListener("keydown", onKeyDown);
+  window.addEventListener("keyup", onKeyUp);
+}
+
+function onKeyDown(event) {
+  if (event.key == "w" || event.key == "ArrowLeft") {
+    moveLeft = true;
+  }
+  if (event.key == "s" || event.key == "ArrowRight") {
+    moveRight = true;
+  }
+}
+function onKeyUp(event) {
+  if (event.key == "w" || event.key == "ArrowLeft") {
+    moveLeft = false;
+  }
+  if (event.key == "s" || event.key == "ArrowRight") {
+    moveRight = false;
+  }
 }
 
 function onWindowResize() {
@@ -131,6 +167,12 @@ function render() {
 
 const clock = new THREE.Clock();
 function animate() {
+  if (moveLeft && cube.position.x > -0.061) {
+    cube.position.x -= 0.001;
+  }
+  if (moveRight && cube.position.x < 0.061) {
+    cube.position.x += 0.001;
+  }
   const elapsedTime = clock.getElapsedTime();
   plane.position.z = (elapsedTime * 0.5) % 2;
   plane2.position.z = ((elapsedTime * 0.5) % 2) - 2;
