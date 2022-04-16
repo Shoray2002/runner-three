@@ -168,9 +168,10 @@ function onKeyUp(event) {
 }
 
 function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  render();
+  effectComposer.setSize(window.innerWidth, window.innerHeight);
 }
 function render() {
   renderer.render(scene, camera);
