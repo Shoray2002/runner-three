@@ -31,7 +31,7 @@ function init() {
   console.log(window.innerWidth, window.innerHeight);
 
   scene = new THREE.Scene();
-  const fog = new THREE.Fog("#d53c3d", 1, 2.5);
+  const fog = new THREE.Fog("#7e7e7e", 1, 2.5);
   scene.fog = fog;
   scene.add(camera);
 
@@ -60,7 +60,7 @@ function init() {
   const ambientLight = new THREE.AmbientLight("#ffffff", 10);
   scene.add(ambientLight);
 
-  const spotlight = new THREE.SpotLight("#fffff", 40, 25, Math.PI * 0.1, 0.25);
+  const spotlight = new THREE.SpotLight("#ffffff", 40, 25, Math.PI * 0.1, 0.25);
   spotlight.position.set(0.5, 0.75, 2.1);
   spotlight.target.position.x = -0.25;
   spotlight.target.position.y = 0.25;
@@ -69,7 +69,7 @@ function init() {
   scene.add(spotlight.target);
 
   const spotlight2 = new THREE.SpotLight(
-    "#d53c3d",
+    "#ffffff",
     40,
     25,
     Math.PI * 0.1,
@@ -90,6 +90,10 @@ function init() {
   render(0);
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
+  controls.dampingFactor = 0.25;
+  controls.enableZoom = false;
+  controls.enablePan = false;
+  controls.maxPolarAngle = Math.PI * 0.48;
   effectComposer = new EffectComposer(renderer);
   effectComposer.setSize(window.innerWidth, window.innerHeight);
   effectComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
