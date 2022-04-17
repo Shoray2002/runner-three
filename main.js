@@ -158,6 +158,9 @@ function onKeyDown(event) {
   if (event.key == "d" || event.key == "ArrowRight") {
     moveRight = true;
   }
+  if (event.key == "w" || event.key == "ArrowUp" || event.key == " ") {
+    moveUp = true;
+  }
 }
 function onKeyUp(event) {
   if (event.key == "a" || event.key == "ArrowLeft") {
@@ -165,9 +168,6 @@ function onKeyUp(event) {
   }
   if (event.key == "d" || event.key == "ArrowRight") {
     moveRight = false;
-  }
-  if (event.key == "w" || event.key == "ArrowUp" || event.key == " ") {
-    moveUp = true;
   }
 }
 
@@ -192,13 +192,13 @@ function animate() {
   const delta = clock.getDelta();
   const speed = 0.2;
   if (moveUp && cube.position.y < 0.071) {
-    cube.position.y += 0.003;
+    cube.position.y += 0.0031;
   }
   if (cube.position.y >= 0.07) {
     moveUp = false;
   }
   if (!moveUp && cube.position.y > 0.02) {
-    cube.position.y -= 0.003;
+    cube.position.y -= 0.0031;
   }
   if (moveLeft && cube.position.x > -0.059) {
     cube.position.x -= speed * delta;
