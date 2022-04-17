@@ -166,9 +166,15 @@ function onKeyUp(event) {
   if (event.key == "d" || event.key == "ArrowRight") {
     moveRight = false;
   }
-  if (event.key == "w" || event.key == "ArrowUp") {
+  if (event.key == "w" || event.key == "ArrowUp" || event.key == " ") {
     moveUp = true;
   }
+}
+
+function jitter() {
+  cube.position.x += (Math.random() * 0.001 - 0.0005) / 3;
+  cube.position.y += (Math.random() * 0.001 - 0.0005) / 3;
+  cube.position.z += (Math.random() * 0.001 - 0.0005) / 3;
 }
 
 function onWindowResize() {
@@ -185,13 +191,7 @@ const clock = new THREE.Clock();
 function animate() {
   const delta = clock.getDelta();
   const speed = 0.2;
-  if (moveLeft && cube.position.x > -0.059) {
-    cube.position.x -= speed * delta;
-  }
-  if (moveRight && cube.position.x < 0.059) {
-    cube.position.x += speed * delta;
-  }
-  if (cube.position.y < 0.071 && moveUp) {
+  if (moveUp && cube.position.y < 0.071) {
     cube.position.y += 0.003;
   }
   if (cube.position.y >= 0.07) {
@@ -200,12 +200,20 @@ function animate() {
   if (!moveUp && cube.position.y > 0.02) {
     cube.position.y -= 0.003;
   }
+  if (moveLeft && cube.position.x > -0.059) {
+    cube.position.x -= speed * delta;
+  }
+  if (moveRight && cube.position.x < 0.059) {
+    cube.position.x += speed * delta;
+  }
+
   const elapsedTime = clock.getElapsedTime();
   plane.position.z = (elapsedTime * 0.5) % 2;
   plane2.position.z = ((elapsedTime * 0.5) % 2) - 2;
   plane3.position.z = ((elapsedTime * 0.5) % 2) - 4;
   window.requestAnimationFrame(animate);
   // controls.update();
+  jitter();
   effectComposer.render();
   render();
 }
