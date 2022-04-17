@@ -17,7 +17,8 @@ let camera,
   effectComposer,
   cube,
   moveLeft = false,
-  moveRight = false;
+  moveRight = false,
+  moveUp = false;
 const textureLoader = new THREE.TextureLoader();
 const gridTexture = textureLoader.load("/grid-6.png");
 const heightTexture = textureLoader.load("/displacement-7.png");
@@ -165,6 +166,9 @@ function onKeyUp(event) {
   if (event.key == "d" || event.key == "ArrowRight") {
     moveRight = false;
   }
+  if (event.key == "w" || event.key == "ArrowUp") {
+    moveUp = true;
+  }
 }
 
 function onWindowResize() {
@@ -179,11 +183,22 @@ function render() {
 
 const clock = new THREE.Clock();
 function animate() {
-  if (moveLeft && cube.position.x > -0.062) {
-    cube.position.x -= 0.002;
+  const delta = clock.getDelta();
+  const speed = 0.2;
+  if (moveLeft && cube.position.x > -0.059) {
+    cube.position.x -= speed * delta;
   }
-  if (moveRight && cube.position.x < 0.062) {
-    cube.position.x += 0.002;
+  if (moveRight && cube.position.x < 0.059) {
+    cube.position.x += speed * delta;
+  }
+  if (cube.position.y < 0.071 && moveUp) {
+    cube.position.y += 0.003;
+  }
+  if (cube.position.y >= 0.07) {
+    moveUp = false;
+  }
+  if (!moveUp && cube.position.y > 0.02) {
+    cube.position.y -= 0.003;
   }
   const elapsedTime = clock.getElapsedTime();
   plane.position.z = (elapsedTime * 0.5) % 2;
