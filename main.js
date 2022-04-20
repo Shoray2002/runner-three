@@ -138,14 +138,16 @@ function init() {
   effectComposer.addPass(gammaCorrectionPass);
 
   var bloomParams = {
-    strength: 0.2,
+    strength: 0.8,
+    radius: 0.5,
+    threshold: 0.5,
   };
 
   const bloomPass = new UnrealBloomPass();
   bloomPass.strength = bloomParams.strength;
-
+  bloomPass.radius = bloomParams.radius;
+  bloomPass.threshold = bloomParams.threshold;
   effectComposer.addPass(bloomPass);
-
   window.addEventListener("resize", onWindowResize);
   window.addEventListener("keydown", onKeyDown);
   window.addEventListener("keyup", onKeyUp);
@@ -213,7 +215,7 @@ function animate() {
   plane3.position.z = ((elapsedTime * 0.5) % 2) - 4;
   window.requestAnimationFrame(animate);
   // controls.update();
-  jitter();
+  // jitter();
   effectComposer.render();
   render();
 }
