@@ -6,6 +6,7 @@ import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectio
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { RGBShiftShader } from "three/examples/jsm/shaders/RGBShiftShader.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
 let camera,
   scene,
@@ -16,6 +17,7 @@ let camera,
   controls,
   effectComposer,
   cube,
+  car,
   moveLeft = false,
   moveRight = false,
   moveUp = false;
@@ -24,11 +26,32 @@ const gridTexture = textureLoader.load("/grid-6.png");
 const heightTexture = textureLoader.load("/displacement-7.png");
 const metalnessTexture = textureLoader.load("/metalness-2.png");
 const neonSquare = textureLoader.load("/square.png");
+const carNormalMap = textureLoader.load("/Normal.png");
 const parameters = {
   displacementScale: 0.4,
   metalness: 1,
   roughness: 0.8,
 };
+const loader = new OBJLoader();
+loader.load(
+  "/car.obj",
+  function (obj) {
+    obj.traverse(function (child) {
+      if (child instanceof THREE.Mesh) {
+        child.material.map = gridTexture;
+        child.material.normalMap = carNormalMap;
+      }
+    });
+    car = obj;
+    car.scale.set(0.007, 0.007, 0.007);
+    car.position.y = 0.02;
+    car.position.z = 0.95;
+    scene.add(car);
+  },
+  onProgress,
+  function onError() {}
+);
+
 init();
 function init() {
   camera = new THREE.PerspectiveCamera(
@@ -72,7 +95,6 @@ function init() {
   scene.add(plane);
   scene.add(plane2);
   scene.add(plane3);
-
   cube = new THREE.Mesh(
     new THREE.BoxGeometry(0.02, 0.02, 0.02),
     new THREE.MeshStandardMaterial({
@@ -84,7 +106,7 @@ function init() {
   );
   cube.position.y = 0.02;
   cube.position.z = 0.9;
-  scene.add(cube);
+  // scene.add(cube);
 
   const ambientLight = new THREE.AmbientLight("#ffffff", 10);
   scene.add(ambientLight);
@@ -153,6 +175,16 @@ function init() {
   window.addEventListener("keyup", onKeyUp);
 }
 
+function onProgress(xhr) {
+  if (xhr.lengthComputable) {
+    const percentComplete = (xhr.loaded / xhr.total) * 100;
+    console.log("model " + Math.round(percentComplete, 2) + "% downloaded");
+  }
+  if (xhr.loaded == xhr.total) {
+    console.log("model loaded");
+  }
+}
+
 function onKeyDown(event) {
   if (event.key == "a" || event.key == "ArrowLeft") {
     moveLeft = true;
@@ -173,10 +205,8 @@ function onKeyUp(event) {
   }
 }
 
-function jitter() {
-  cube.position.x += (Math.random() * 0.001 - 0.0005) / 3;
-  cube.position.y += (Math.random() * 0.001 - 0.0005) / 3;
-  cube.position.z += (Math.random() * 0.001 - 0.0005) / 3;
+function hover() {
+  car.position.y += (Math.random() * 0.001 - 0.0005) / 3;
 }
 
 function onWindowResize() {
@@ -215,7 +245,7 @@ function animate() {
   plane3.position.z = ((elapsedTime * 0.5) % 2) - 4;
   window.requestAnimationFrame(animate);
   // controls.update();
-  // jitter();
+  hover();
   effectComposer.render();
   render();
 }
