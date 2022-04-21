@@ -27,6 +27,7 @@ const heightTexture = textureLoader.load("/displacement-7.png");
 const metalnessTexture = textureLoader.load("/metalness-2.png");
 const neonSquare = textureLoader.load("/square.png");
 const carNormalMap = textureLoader.load("/Normal.png");
+const albedo = new THREE.TextureLoader().load("/albedo.png");
 const parameters = {
   displacementScale: 0.4,
   metalness: 1,
@@ -38,7 +39,8 @@ loader.load(
   function (obj) {
     obj.traverse(function (child) {
       if (child instanceof THREE.Mesh) {
-        child.material.map = gridTexture;
+        child.material.map = albedo;
+        child.material.color = new THREE.Color(0xb99771);
         child.material.normalMap = carNormalMap;
       }
     });
