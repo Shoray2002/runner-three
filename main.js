@@ -15,6 +15,7 @@ let camera,
   plane2,
   plane3,
   controls,
+  isLoaded = false,
   effectComposer,
   cube,
   car,
@@ -33,23 +34,6 @@ const parameters = {
   roughness: 0.8,
 };
 const loader = new OBJLoader();
-loader.load(
-  "/car.obj",
-  function (obj) {
-    obj.traverse(function (child) {
-      if (child instanceof THREE.Mesh) {
-        child.material.map = albedo;
-      }
-    });
-    car = obj;
-    car.scale.set(0.007, 0.007, 0.007);
-    car.position.y = 0.02;
-    car.position.z = 0.95;
-    scene.add(car);
-  },
-  onProgress,
-  function onError() {}
-);
 
 init();
 function init() {
@@ -106,6 +90,24 @@ function init() {
   cube.position.y = 0.02;
   cube.position.z = 0.9;
   // scene.add(cube);
+
+  loader.load(
+    "/car.obj",
+    function (obj) {
+      obj.traverse(function (child) {
+        if (child instanceof THREE.Mesh) {
+          child.material.map = albedo;
+        }
+      });
+      car = obj;
+      car.scale.set(0.007, 0.007, 0.007);
+      car.position.y = 0.02;
+      car.position.z = 0.95;
+      scene.add(car);
+    },
+    onProgress,
+    function onError() {}
+  );
 
   const ambientLight = new THREE.AmbientLight("#ffffff", 10);
   scene.add(ambientLight);
@@ -206,6 +208,7 @@ function onKeyUp(event) {
 
 function hover() {
   car.position.y += (Math.random() * 0.001 - 0.0005) / 3;
+  isLoaded = true;
 }
 
 function onWindowResize() {
@@ -222,22 +225,23 @@ const clock = new THREE.Clock();
 function animate() {
   const delta = clock.getDelta();
   const speed = 0.2;
-  if (moveUp && cube.position.y < 0.071) {
-    cube.position.y += 0.0031;
+  if (isLoaded) {
+    if (moveUp && car.position.y < 0.071) {
+      car.position.y += 0.0031;
+    }
+    if (car.position.y >= 0.07) {
+      moveUp = false;
+    }
+    if (!moveUp && car.position.y > 0.02) {
+      car.position.y -= 0.0031;
+    }
+    if (moveLeft && car.position.x > -0.045) {
+      car.position.x -= speed * delta;
+    }
+    if (moveRight && car.position.x < 0.045) {
+      car.position.x += speed * delta;
+    }
   }
-  if (cube.position.y >= 0.07) {
-    moveUp = false;
-  }
-  if (!moveUp && cube.position.y > 0.02) {
-    cube.position.y -= 0.0031;
-  }
-  if (moveLeft && cube.position.x > -0.059) {
-    cube.position.x -= speed * delta;
-  }
-  if (moveRight && cube.position.x < 0.059) {
-    cube.position.x += speed * delta;
-  }
-
   const elapsedTime = clock.getElapsedTime();
   plane.position.z = (elapsedTime * 0.5) % 2;
   plane2.position.z = ((elapsedTime * 0.5) % 2) - 2;
