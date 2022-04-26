@@ -7,6 +7,7 @@ pondTexture.wrapS = pondTexture.wrapT = THREE.ClampToEdgeWrapping;
 const snowTexture = loader.load("./snow.jpg");
 const icetop = loader.load("./icetop.jpg");
 const wall = loader.load("./wall.jpg");
+
 let dirLight, hemiLight, fire, helper;
 let camera,
   scene,
@@ -45,27 +46,27 @@ function init() {
   camera.position.set(-400, 300, 200);
   scene = new THREE.Scene();
   coneParams = {
-    metalness: 0,
-    roughness: 0,
+    metalness: 0.1,
+    roughness: 0.8,
     map: icetop,
     color: 0x94f7ff,
   };
   cylinderParams = {
-    metalness: 0.5,
-    roughness: 1,
+    metalness: 0.1,
+    roughness: 0.8,
     map: wall,
     color: 0xc0f7ff,
   };
   groundParams = {
-    metalness: 0.5,
-    roughness: 1,
+    metalness: 0.8,
+    roughness: 0.8,
     map: snowTexture,
     side: THREE.DoubleSide,
     color: 0x94f7ff,
   };
   hemisphereParams = {
-    metalness: 0.5,
-    roughness: 1,
+    metalness: 0.1,
+    roughness: 0.8,
     map: wall,
     color: 0x94f7ff,
   };
@@ -93,9 +94,8 @@ function init() {
   dirLight.shadow.mapSize.height = 1024 * 2;
   scene.add(dirLight);
 
-  fire = new THREE.PointLight(0xff8000, 5, 300);
+  fire = new THREE.PointLight(0xff8000, 5, 500);
   fire.decay = 2;
-  fire.power = 100;
   fire.position.set(0, 0, 0);
   fire.castShadow = true;
   fire.name = "fire";
@@ -104,7 +104,7 @@ function init() {
 
   ground = new THREE.Mesh(
     new THREE.PlaneGeometry(10000, 10000),
-    new THREE.MeshBasicMaterial(groundParams)
+    new THREE.MeshPhysicalMaterial(groundParams)
   );
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
