@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>jasonderulo007</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+  </head>
+  <link rel="stylesheet" href="./style.css" />
+  <body>
+    <div class="interactives">
+      <div class="buttons">
+        <div id="toggle" class="button">Toggle Rotation</div>
+        <div id="direction" class="button">Change Direction</div>
+      </div>
+
+      <div class="slidecontainer">
+        <input
+          type="range"
+          min="1"
+          max="20"
+          value="1"
+          step="0.2"
+          class="slider"
+          id="speed"
+        />
+        <input
+          type="range"
+          min="1"
+          max="20"
+          value="10"
+          step="0.1"
+          class="slider"
+          id="zoom"
+        />
+      </div>
+    </div>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.121.1/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
