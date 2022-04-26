@@ -7,6 +7,7 @@ pondTexture.wrapS = pondTexture.wrapT = THREE.ClampToEdgeWrapping;
 const snowTexture = loader.load("./snow.jpg");
 const icetop = loader.load("./icetop.jpg");
 const wall = loader.load("./wall.jpg");
+let dirLight, hemiLight, fire, helper;
 let camera,
   scene,
   renderer,
@@ -22,9 +23,11 @@ let camera,
   cylinderParams;
 let toggleState = true;
 let directionState = false;
+let timeState = true;
 let speed = 1;
 const toggle = document.getElementById("toggle");
 const direction = document.getElementById("direction");
+const day_night = document.getElementById("day-night");
 const speedVal = document.getElementById("speed");
 const zoomVal = document.getElementById("zoom");
 init();
@@ -44,48 +47,42 @@ function init() {
   coneParams = {
     metalness: 0,
     roughness: 0,
-    normalMap: icetop,
-    normalScale: new THREE.Vector2(0.5, 0.5),
-    // color: 0x94f7ff,
+    map: icetop,
+    color: 0x94f7ff,
   };
   cylinderParams = {
     metalness: 0.5,
     roughness: 1,
-    normalMap: wall,
-    normalScale: new THREE.Vector2(0.5, 0.5),
+    map: wall,
     color: 0xc0f7ff,
   };
   groundParams = {
     metalness: 0.5,
     roughness: 1,
-    normalMap: snowTexture,
-    normalScale: new THREE.Vector2(0.5, 0.5),
+    map: snowTexture,
     side: THREE.DoubleSide,
-    color: 0xe3fdff,
+    color: 0x94f7ff,
   };
   hemisphereParams = {
     metalness: 0.5,
     roughness: 1,
-    normalMap: wall,
-    normalScale: new THREE.Vector2(0.5, 0.5),
+    map: wall,
     color: 0x94f7ff,
   };
   shapeParams = {
-    clearCoat: 0.8,
-    clearCoatRoughness: 0.5,
     color: 0xe3fdff,
     map: pondTexture,
     metalness: 0.5,
     roughness: 1,
   };
-  const hemiLight = new THREE.HemisphereLight(0xd1f7ff, 0x444444);
+  hemiLight = new THREE.HemisphereLight(0xd1f7ff, 0x444444);
   hemiLight.position.set(0, 200, 0);
   hemiLight.name = "hemiLight";
   scene.add(hemiLight);
 
-  const dirLight = new THREE.DirectionalLight(0xd1f7ff);
-  dirLight.intensity = 0.8;
-  dirLight.position.set(0, 200, 100);
+  dirLight = new THREE.DirectionalLight(0xffffff);
+  dirLight.intensity = 5;
+  dirLight.position.set(0, 100, 100);
   dirLight.castShadow = true;
   dirLight.shadow.camera.top = 1000;
   dirLight.shadow.camera.bottom = -1000;
@@ -96,9 +93,18 @@ function init() {
   dirLight.shadow.mapSize.height = 1024 * 2;
   scene.add(dirLight);
 
+  fire = new THREE.PointLight(0xff8000, 5, 300);
+  fire.decay = 2;
+  fire.power = 100;
+  fire.position.set(0, 0, 0);
+  fire.castShadow = true;
+  fire.name = "fire";
+  fire.intensity = 0;
+  scene.add(fire);
+
   ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(1000, 1000),
-    new THREE.MeshPhysicalMaterial(groundParams)
+    new THREE.PlaneGeometry(10000, 10000),
+    new THREE.MeshBasicMaterial(groundParams)
   );
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
@@ -111,24 +117,25 @@ function init() {
   );
   cylinder.name = "walls";
   cylinder.translateY(50);
-
+  cylinder.castShadow = true;
   hut.add(cylinder);
   cone = new THREE.Mesh(
     new THREE.ConeGeometry(75, 100, 180),
     new THREE.MeshPhysicalMaterial(coneParams)
   );
+  cone.castShadow = true;
   cone.name = "top";
   cone.translateY(150);
   hut.add(cone);
-
-  hut.position.set(0, 0, -100);
+  hut.position.set(0, -2, -150);
   scene.add(hut);
   hemisphere = new THREE.Mesh(
     new THREE.SphereGeometry(100, 180, 180, 0, 2 * Math.PI, 0, Math.PI / 2),
     new THREE.MeshPhysicalMaterial(hemisphereParams)
   );
   hemisphere.name = "igloo";
-  hemisphere.position.set(-250, 0, 50);
+  hemisphere.position.set(-200, -2, 20);
+  hemisphere.castShadow = true;
   scene.add(hemisphere);
   const x = 0,
     y = 0;
@@ -147,20 +154,25 @@ function init() {
   const material = new THREE.MeshPhysicalMaterial(shapeParams);
   const pond = new THREE.Mesh(geometry, material);
   pond.rotation.x = -Math.PI / 2;
-  pond.scale.set(10, 10, 10);
-  pond.position.set(-70, 2, 200);
+  pond.scale.set(18, 18, 18);
+  pond.rotateZ(-8.6);
+  pond.position.set(40, 2, -50);
+  pond.castShadow = true;
   scene.add(pond);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.shadowMap.enabled = true;
+  renderer.toneMapping = THREE.ReinhardToneMapping;
+  // renderer.physicallyCorrectLights = true;
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(renderer.domElement);
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.autoRotate = true;
   controls.autoRotateSpeed = speed;
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.25;
   window.addEventListener("resize", onWindowResize);
 }
 
@@ -185,6 +197,18 @@ direction.addEventListener("click", () => {
   } else {
     controls.autoRotateSpeed = speed;
   }
+});
+day_night.addEventListener("click", () => {
+  if (timeState) {
+    dirLight.intensity = 0;
+    fire.intensity = 8;
+    day_night.innerHTML = "Day";
+  } else {
+    dirLight.intensity = 5;
+    fire.intensity = 0;
+    day_night.innerHTML = "Night";
+  }
+  timeState = !timeState;
 });
 speedVal.addEventListener("change", (e) => {
   controls.autoRotateSpeed = e.target.value;
