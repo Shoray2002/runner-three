@@ -6,7 +6,7 @@ const pondTexture = loader.load("./pond.jpg");
 pondTexture.wrapS = pondTexture.wrapT = THREE.ClampToEdgeWrapping;
 const snowTexture = loader.load("./snow.jpg");
 const icetop = loader.load("./icetop.jpg");
-const wall=loader.load("./wall.jpg");
+const wall = loader.load("./wall.jpg");
 let camera,
   scene,
   renderer,
@@ -16,6 +16,9 @@ let camera,
   cone,
   hemisphere,
   coneParams,
+  groundParams,
+  hemisphereParams,
+  shapeParams,
   cylinderParams;
 let toggleState = true;
 let directionState = false;
@@ -39,26 +42,48 @@ function init() {
   camera.position.set(-400, 300, 200);
   scene = new THREE.Scene();
   coneParams = {
-    metalness: 0.5,
-    roughness: 1,
+    metalness: 0,
+    roughness: 0,
     normalMap: icetop,
     normalScale: new THREE.Vector2(0.5, 0.5),
-    color: 0x6d9ec8,
+    // color: 0x94f7ff,
   };
   cylinderParams = {
     metalness: 0.5,
     roughness: 1,
     normalMap: wall,
     normalScale: new THREE.Vector2(0.5, 0.5),
-    color: 0x6d9ec8,
-
+    color: 0xc0f7ff,
   };
-  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
+  groundParams = {
+    metalness: 0.5,
+    roughness: 1,
+    normalMap: snowTexture,
+    normalScale: new THREE.Vector2(0.5, 0.5),
+    side: THREE.DoubleSide,
+    color: 0xe3fdff,
+  };
+  hemisphereParams = {
+    metalness: 0.5,
+    roughness: 1,
+    normalMap: wall,
+    normalScale: new THREE.Vector2(0.5, 0.5),
+    color: 0x94f7ff,
+  };
+  shapeParams = {
+    clearCoat: 0.8,
+    clearCoatRoughness: 0.5,
+    color: 0xe3fdff,
+    map: pondTexture,
+    metalness: 0.5,
+    roughness: 1,
+  };
+  const hemiLight = new THREE.HemisphereLight(0xd1f7ff, 0x444444);
   hemiLight.position.set(0, 200, 0);
   hemiLight.name = "hemiLight";
   scene.add(hemiLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff);
+  const dirLight = new THREE.DirectionalLight(0xd1f7ff);
   dirLight.intensity = 0.8;
   dirLight.position.set(0, 200, 100);
   dirLight.castShadow = true;
@@ -73,11 +98,7 @@ function init() {
 
   ground = new THREE.Mesh(
     new THREE.PlaneGeometry(1000, 1000),
-    new THREE.MeshPhysicalMaterial({
-      color: 0x6d9ec8,
-      map: snowTexture,
-      side: THREE.DoubleSide,
-    })
+    new THREE.MeshPhysicalMaterial(groundParams)
   );
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
@@ -103,10 +124,8 @@ function init() {
   hut.position.set(0, 0, -100);
   scene.add(hut);
   hemisphere = new THREE.Mesh(
-    new THREE.SphereGeometry(100, 32, 32, 0, 2 * Math.PI, 0, Math.PI / 2),
-    new THREE.MeshPhysicalMaterial({
-      color: 0xbbf1f3,
-    })
+    new THREE.SphereGeometry(100, 180, 180, 0, 2 * Math.PI, 0, Math.PI / 2),
+    new THREE.MeshPhysicalMaterial(hemisphereParams)
   );
   hemisphere.name = "igloo";
   hemisphere.position.set(-250, 0, 50);
@@ -125,7 +144,7 @@ function init() {
   shape.bezierCurveTo(x + 7, y, x + 8, y + 5, x + 5, y + 5);
 
   const geometry = new THREE.ShapeGeometry(shape);
-  const material = new THREE.MeshBasicMaterial({ map: pondTexture });
+  const material = new THREE.MeshPhysicalMaterial(shapeParams);
   const pond = new THREE.Mesh(geometry, material);
   pond.rotation.x = -Math.PI / 2;
   pond.scale.set(10, 10, 10);
